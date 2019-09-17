@@ -45,9 +45,10 @@ class Lexer {
                 str += lastChar;
                 while(isalphabet(lastChar)){
                     lastChar = getNextChar(iFile);
-                    str += lastChar;
+                    if(isalphabet(lastChar))str += lastChar;
                 }
-                if(str == "def"){
+                identifierStr = str;
+                if(str.compare("def")){
                     return tok_def;
                 }else{
                     return tok_identifier;

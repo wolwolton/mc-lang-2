@@ -168,7 +168,30 @@ static std::unique_ptr<ExprAST> ParseParenExpr() {
 // 引数の参照である場合はVariableExprASTを返し、関数呼び出しの場合は
 // CallExprASTを返す。
 static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
-    return nullptr;
+    std::string idt = lexer.getIdentifier();
+    getNextToken();
+    if(CurTok != '('){
+        //variable
+        auto R = llvm::make_unique<VariableExprAST>(idt);
+        return std::move(R);
+    }
+    //function
+    getNextToken();
+    std::vector<std::unique_ptr<ExprAST>> args;
+    while(true){
+        if(CurTok==')'){
+            break;
+        }
+        if(CurTok==','){
+            getNextToken();
+        }
+        std::cout << "argIde" << std::endl;
+        args.push_back(std::move(ParseExpression()));
+    }
+    getNextToken();
+    auto R = llvm::make_unique<CallExprAST>(idt, std::move(args));
+    return std::move(R);
+
     // 1. getIdentifierを用いて識別子を取得する。
 
     // 2. トークンを次に進める。
@@ -183,7 +206,7 @@ static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
     // ParseExpressionを用いる。
     // 呼び出しが終わるまで(CurTok == ')'になるまで)引数をパースしていき、都度argsにpush_backする。
     // 呼び出しの終わりと引数同士の区切りはCurTokが')'であるか','であるかで判別できることに注意。
-    std::vector<std::unique_ptr<ExprAST>> args;
+    //std::vector<std::unique_ptr<ExprAST>> args;
 
     // 6. トークンを次に進める。
 
@@ -194,6 +217,7 @@ static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
 static std::unique_ptr<ExprAST> ParsePrimary() {
     switch (CurTok) {
         default:
+            std::cout << "Error!" << (char)CurTok << std::endl;
             return LogError("unknown token when expecting an expression");
         case tok_identifier:
             return ParseIdentifierExpr();
@@ -251,7 +275,21 @@ static std::unique_ptr<PrototypeAST> ParsePrototype() {
     // 2.2とほぼ同じ。CallExprASTではなくPrototypeASTを返し、
     // 引数同士の区切りが','ではなくgetNextToken()を呼ぶと直ぐに
     // CurTokに次の引数(もしくは')')が入るという違いのみ。
-    return nullptr;
+    std::string idt = lexer.getIdentifier();
+    getNextToken();
+    std::cout << (char)CurTok;
+    std::vector<std::string> args;
+    while(true){
+        if(CurTok==')'){
+            break;
+        }
+        args.push_back(std::to_string(CurTok));
+        getNextToken();
+    std::cout << (char)CurTok;
+    }
+    getNextToken();//eat )
+    auto R = llvm::make_unique<PrototypeAST>(std::move(idt), std::move(args));
+    return std::move(R);
 }
 
 static std::unique_ptr<FunctionAST> ParseDefinition() {
