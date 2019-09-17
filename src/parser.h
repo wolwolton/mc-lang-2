@@ -185,7 +185,6 @@ static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
         if(CurTok==','){
             getNextToken();
         }
-        std::cout << "argIde" << std::endl;
         args.push_back(std::move(ParseExpression()));
     }
     getNextToken();

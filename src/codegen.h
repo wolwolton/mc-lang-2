@@ -44,14 +44,29 @@ Value *VariableExprAST::codegen() {
 
 // TODO 2.5: 関数呼び出しのcodegenを実装してみよう
 Value *CallExprAST::codegen() {
-    return nullptr;
+    auto func = myModule->getFunction(callee);
+    if(!func){
+        LogError("Function is not defined");
+        return nullptr;
+    }
+    if(!(func->arg_size()==args.size())){
+        LogError("Args is not enough to call");
+    }
+    
+    std::vector<Value *> argsV;
+    for(int i =0; i<args.size(); i++){
+        Value* arg = args[i]->codegen();
+        argsV.push_back(arg);
+    }
+    return Builder.CreateCall(func, argsV, "calltmp");
+    //適当にcalltmpとしたけど大丈夫だろうか()
+
     // 1. myModule->getFunctionを用いてcalleeがdefineされているかを
     // チェックし、されていればそのポインタを得る。
 
     // 2. llvm::Function::arg_sizeと実際に渡されたargsのサイズを比べ、
     // サイズが間違っていたらエラーを出力。
 
-    std::vector<Value *> argsV;
     // 3. argsをそれぞれcodegenしllvm::Valueにし、argsVにpush_backする。
 
     // 4. IRBuilderのCreateCallを呼び出し、Valueをreturnする。
