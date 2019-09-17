@@ -277,13 +277,14 @@ static std::unique_ptr<PrototypeAST> ParsePrototype() {
     // CurTokに次の引数(もしくは')')が入るという違いのみ。
     std::string idt = lexer.getIdentifier();
     getNextToken();
+    getNextToken();//eat (
     std::cout << (char)CurTok;
     std::vector<std::string> args;
     while(true){
         if(CurTok==')'){
             break;
         }
-        args.push_back(std::to_string(CurTok));
+        args.push_back(lexer.getIdentifier());
         getNextToken();
     std::cout << (char)CurTok;
     }

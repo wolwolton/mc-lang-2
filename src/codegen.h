@@ -31,6 +31,12 @@ Value *LogErrorV(const char *str) {
 
 // TODO 2.4: 引数のcodegenを実装してみよう
 Value *VariableExprAST::codegen() {
+    auto iter = NamedValues.find(VariableExprAST::variableName);
+    if(iter != end(NamedValues)){
+        //std::cout << "HIT VARIABLE:" << variableName << std::endl;
+        return iter->second;
+    }
+
     return nullptr;
     // NamedValuesの中にVariableExprAST::NameとマッチするValueがあるかチェックし、
     // あったらそのValueを返す。

@@ -48,7 +48,7 @@ class Lexer {
                     if(isalphabet(lastChar))str += lastChar;
                 }
                 identifierStr = str;
-                if(str.compare("def")){
+                if(str.compare("def")==0){
                     return tok_def;
                 }else{
                     return tok_identifier;
